@@ -1,8 +1,10 @@
-import unittest
-import time
 import cProfile
-import pstats
 import io
+import pstats
+import sys
+import time
+import unittest
+
 from newProfiler import Profiler
 
 
@@ -19,8 +21,6 @@ class TestProfiler(unittest.TestCase):
 
         wrapped_function = profiler._make_wrapper(example_test_function)
         wrapped_function()
-
-        print(profiler.stats)
 
         self.assertEqual(len(list(profiler.stats.keys())), 1)
         self.assertTrue("example_test_function" in list(profiler.stats.keys())[0].split())
@@ -110,7 +110,6 @@ class TestProfiler(unittest.TestCase):
         """
         profiler = Profiler()
 
-        # Создаем тестовый модуль с функциями
         test_module = type(
             "TestModule",
             (object,),
@@ -151,7 +150,6 @@ class TestProfiler(unittest.TestCase):
             },
         )()
 
-        import sys
         sys.modules["test_module"] = test_module
 
         try:
@@ -168,7 +166,6 @@ class TestProfiler(unittest.TestCase):
         with self.assertLogs(level="ERROR") as cm:
             profiler.run("invalid_module")
 
-        # Проверяем, что выводится сообщение об ошибке
         self.assertIn("название метода должно быть в формате module_name.method_name", cm.output[0])
 
     def test_run_invalid_sort(self):
@@ -177,11 +174,9 @@ class TestProfiler(unittest.TestCase):
         """
         profiler = Profiler()
 
-        # Запускаем профилирование с некорректным значением sort
         with self.assertLogs(level="ERROR") as cm:
             profiler.run("test_module.test_function", sort=10)
 
-        # Проверяем, что выводится сообщение об ошибке
         self.assertIn("всего 5 столбцов для сортировки", cm.output[0])
 
 
